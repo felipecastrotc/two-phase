@@ -1,22 +1,8 @@
 import numpy as np
-from .utils import Constant as ct
+from .utils import Properties as p
+
 
 class EBVelocity(object):
-    
-    def __init__(self):
-        # Models
-        self.ebvel_dict = {'nicklin1962': self.nicklin1962,
-                              'bendiksen1984': self.bendiksen1984,
-                              'theron1989': self.theron1989,
-                              'petalasaziz2000': self.petalasaziz2000,
-                              'dukler1985': self.dukler1985}
-
-        self.ebvel_title = ['Nicklin (1962)',
-                               'Bendiksen (1984)',
-                               'Theron (1989)',
-                               'Petalas and Aziz (2000)',
-                               'Dukler (1985)']
-        pass
 
     # ============ Models - Elongated bubble translational velocity =========
 
@@ -108,14 +94,12 @@ class EBVelocity(object):
 class Homogeneous(object):
 
     # ====================== Homogeneous model ==========================
-
     @staticmethod
     def gvf(v_sg, v_sl):
         return v_sg / (v_sg + v_sl)
 
     @staticmethod
     def Rem(v_sg, v_sl, rho_l, rho_g, mu_l, mu_g, d, gvf=None):
-        K = ct.K
         # Calculate the liquid properties
         if not gvf:
             # Get the homogeneous GVF

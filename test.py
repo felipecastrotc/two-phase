@@ -1,3 +1,4 @@
+from two_phase import Properties as p
 import pandas as pd
 import numpy as np
 from two_phase import TwoPhase
@@ -9,50 +10,14 @@ df['V_sl (m/s)']
 
 tp = TwoPhase(d=0.0525, gas='air', liquid='water')
 
-tp.v_sl = df['V_sl (m/s)']
-tp.v_sg = df['V_sg (m/s)']
+tp.v_sl = df['V_sl (m/s)'].values
+tp.v_sg = df['V_sg (m/s)'].values
+
+tp.P = df['PT-301 (kPa)'].values*1e3 + 101.325*1e3
+tp.T = df['TT-301 (ºC)'].values
 
 
-tp.g = 1
-tp.g
-tp.test.g
+tp.eb_vel.ebmodels()
+tp.eb_vel.authors
 
-
-class mytest:
-    name = "test1"
-    tricks = list()
-
-    def __init__(self, name):
-        self.name = name
-        self.tricks = [name]
-        self.tricks.append(name)
-
-
-t1 = mytest("hello world")
-t2 = mytest("bye world")
-
-
-print(t1.name, t2.name)
-print(t1.tricks, t2.tricks)
-
-
-class a(object):
-    test = 1
-
-    def test
-
-
-class mytest:
-    name = "test1"
-    tricks = list()
-
-    def __init__(self, name):
-        self.name = name
-        #self.tricks=[name]
-        self.tricks.append(name)
-
-
-t1 = mytest("hello world")
-t2 = mytest("bye world")
-print(t1.name, t2.name)
-print(t1.tricks, t2.tricks)
+tp.convert.kgmin2m3s()
