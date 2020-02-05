@@ -103,6 +103,10 @@ class TwoPhase(object):
         # Legacy version that check for zero division
         # if (p.v_sg + p.v_sl) != 0:
         p.gvfh = Homogeneous.gvf(p.v_sg, p.v_sl)
+    
+    @property  # v_m [m/s] -> Mixture velocity
+    def v_m(self):
+        return p.v_mr
 
     @property  # Q_g [m^3/s] -> Gas volume rate
     def Q_g(self):
@@ -135,8 +139,8 @@ class TwoPhase(object):
     @d.setter  # d [m] -> diameter
     def d(self, value):
         p.d = value
-        p.v_sl = self.m3s2vs(p.Q_g)
-        p.v_sg = self.m3s2vs(p.Q_l)
+        p.v_sl = Convert.m3s2vs(p.Q_g)
+        p.v_sg = Convert.m3s2vs(p.Q_l)
 
     # ======================== Class Options ================================
 

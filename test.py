@@ -15,9 +15,3 @@ tp.v_sg = df['V_sg (m/s)'].values
 
 tp.P = df['PT-301 (kPa)'].values*1e3 + 101.325*1e3
 tp.T = df['TT-301 (ºC)'].values
-
-
-tp.eb_vel.ebmodels()
-tp.eb_vel.authors
-
-tp.convert.kgmin2m3s()

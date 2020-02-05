@@ -14,6 +14,7 @@ class Properties(object):
 
     v_sg = 0  # [m/s] -> Gas superficial velocity
     v_sl = 0  # [m/s] -> Liquid superficial velocity
+    v_m = 0   # [m/s] -> Mixture velocity
 
     Q_g = 0  # [m^3/s] -> Gas volume rate
     Q_l = 0  # [m^3/s] -> Liquid volume rate
