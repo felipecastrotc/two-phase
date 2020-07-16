@@ -2,6 +2,7 @@ import numpy as np
 from .utils import Properties as p
 from .models import EBVelocity
 from .models import Homogeneous
+from .models import Pattern
 
 
 class EBVelUtil(object):
@@ -127,10 +128,27 @@ class HomogeneousUtil(object):
         foo = [None] * 4 if type(foo) is not list else foo
 
         # Get the fluid properties
-        rho_l = p.rho(rho_type=rho_l, T=T, P=P, foo=foo[0], fluid=liq)
-        rho_g = p.rho(rho_type=rho_g, T=T, P=P, foo=foo[1], fluid=gas)
-        mu_l = p.mu(mu_type=mu_l, T=T, P=P, foo=foo[2], fluid=liq)
-        mu_g = p.mu(mu_type=mu_g, T=T, P=P, foo=foo[3], fluid=gas)
+        rho_l = p.rho(T=T, P=P, foo=foo[0], fluid=liq)
+        rho_g = p.rho(T=T, P=P, foo=foo[1], fluid=gas)
+        mu_l = p.mu(T=T, P=P, foo=foo[2], fluid=liq)
+        mu_g = p.mu(T=T, P=P, foo=foo[3], fluid=gas)
         return Homogeneous.Rem(v_sg, v_sl, rho_l, rho_g, mu_l, mu_g, d, gvf)
 
+    pass
+
+
+class PatternUtil(object):
+    def __init__(self):
+        pass
+    
+    @staticmethod
+    def taitel1980(v_sg=None, v_sl=None, rho_g=None, rho_l=None, sigma=None, text=False):
+        # Check for default variables
+        v_sg = p.v_sg if v_sg is None else v_sg
+        v_sl = p.v_sl if v_sl is None else v_sl
+        rho_g = p.rho(T=T, P=P, foo=foo[1], fluid=gas)
+        rho_l = p.rho(T=T, P=P, foo=foo[0], fluid=liq)
+        d = p.d if d is None else d
+        return Pattern.taitel1980(v_sg, v_sl, rho_g, rho_l, sigma, p.g, text)
+    
     pass

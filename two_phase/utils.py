@@ -30,18 +30,24 @@ class Properties(object):
     gas = "air"
 
     # Properties functions
+    sigma_func = lambda x, y: x + y
+    
     rho_l_func = lambda x, y: x + y
     rho_g_func = lambda x, y: x + y
 
     mu_l_func = lambda x, y: x + y
     mu_g_func = lambda x, y: x + y
 
+    sigma_default = False
+    
     rho_l_default = False
     rho_g_default = False
 
     mu_l_default = False
     mu_g_default = False
 
+    # TODO: check what the "prop"_type means and consider removing it
+    # FIXING this issue
     # Properties decision functions
     @staticmethod
     def rho(rho_type=None, T=None, P=None, foo=None, fluid=None):
@@ -49,33 +55,32 @@ class Properties(object):
         # use the fluid var to specify if you the gas or liquid function.
         p = Properties
         #  Check the defined variables
-        T = p.T if not T else T
-        P = p.P if not P else P
-        fluid = "liq" if not fluid else fluid
-        # Check if rho_type is already defined
-        if not rho_type:
-            if callable(foo):
-                # Use the passed function
-                rho_val = foo(T, P)
-            elif fluid is "liq":
-                if p.rho_l_default:
-                    # Use custom function
-                    rho_val = p.rho_l_func(T, P)
-                else:
-                    # Use coolprop library to get the fluid properties
-                    rho_val = cp.PropsSI("D", "T", T + p.K, "P", P, p.liq)
-            elif fluid is "gas":
-                if p.rho_g_default:
-                    # Use custom function
-                    rho_val = p.rho_l_func(T, P)
-                else:
-                    # Use coolprop library to get the fluid properties
-                    rho_val = cp.PropsSI("D", "T", T + p.K, "P", P, p.gas)
+        T = p.T if T is None else T
+        P = p.P if P is None else P
+        fluid = "liq" if fluid is None else fluid
+        # Check which method to use
+        if callable(foo):
+            # Use the passed function
+            rho = foo(T, P)
+        elif fluid is "liq":
+            if p.rho_l_default:
+                # Use custom function
+                rho = p.rho_l_func(T, P)
             else:
-                # Unknown fluid
                 # Use coolprop library to get the fluid properties
-                rho_val = cp.PropsSI("D", "T", T + p.K, "P", P, fluid)
-        return rho_val
+                rho = cp.PropsSI("D", "T", T + p.K, "P", P, p.liq)
+        elif fluid is "gas":
+            if p.rho_g_default:
+                # Use custom function
+                rho = p.rho_l_func(T, P)
+            else:
+                # Use coolprop library to get the fluid properties
+                rho = cp.PropsSI("D", "T", T + p.K, "P", P, p.gas)
+        else:
+            # Unknown fluid
+            # Use coolprop library to get the fluid properties
+            rho = cp.PropsSI("D", "T", T + p.K, "P", P, fluid)
+        return rho
 
     @staticmethod
     def mu(mu_type=None, T=None, P=None, foo=None, fluid=None):
@@ -84,33 +89,56 @@ class Properties(object):
         # use the fluid var to specify if you the gas or liquid function.
         p = Properties
         #  Check the defined variables
-        T = p.T if not T else T
-        P = p.P if not P else P
-        fluid = "liq" if not fluid else fluid
-        # Check if mu is already defined
-        if not mu:
-            if callable(foo):
-                # Use the passed function
-                mu = foo(T, P)
-            elif fluid is "liq":
-                if p.mu_l_default:
-                    # Use custom function
-                    mu = p.mu_l_func(T, P)
-                else:
-                    # Use coolprop library to get the fluid properties
-                    mu = cp.PropsSI("V", "T", T + p.K, "P", P, p.liq)
-            elif fluid is "gas":
-                if p.mu_g_default:
-                    # Use custom function
-                    mu = p.mu_l_func(T, P)
-                else:
-                    # Use coolprop library to get the fluid properties
-                    mu = cp.PropsSI("V", "T", T + p.K, "P", P, p.gas)
+        T = p.T if T is None else T
+        P = p.P if P is None else P
+        fluid = "liq" if fluid is None else fluid
+        # Check which method to use
+        if callable(foo):
+            # Use the passed function
+            mu = foo(T, P)
+        elif fluid is "liq":
+            if p.mu_l_default:
+                # Use custom function
+                mu = p.mu_l_func(T, P)
             else:
-                # Unknown fluid
                 # Use coolprop library to get the fluid properties
-                mu = cp.PropsSI("V", "T", T + p.K, "P", P, fluid)
+                mu = cp.PropsSI("V", "T", T + p.K, "P", P, p.liq)
+        elif fluid is "gas":
+            if p.mu_g_default:
+                # Use custom function
+                mu = p.mu_l_func(T, P)
+            else:
+                # Use coolprop library to get the fluid properties
+                mu = cp.PropsSI("V", "T", T + p.K, "P", P, p.gas)
+        else:
+            # Unknown fluid
+            # Use coolprop library to get the fluid properties
+            mu = cp.PropsSI("V", "T", T + p.K, "P", P, fluid)
         return mu
+    
+    
+    @staticmethod
+    def sigma(sigma_type=None, T=None, x=None, foo=None, fluid=None):
+        # x = quality
+        # In case you want to use custom function saved on the class
+        # use the fluid var to specify if you the gas or liquid function.
+        p = Properties
+        #  Check the defined variables
+        T = p.T if T is None else T
+        x = 0. if x is None else x
+        fluid = p.liq if fluid is None else fluid
+        # Check which method to use
+        if callable(foo):
+            # Use the passed function
+            sigma = foo(T, x)
+        else:
+            if p.sigma_default:
+                # Use custom function
+                sigma = p.sigma_func(T, x)
+            else:
+                # Use coolprop library to get the fluid properties
+                sigma = cp.PropsSI("I", "Q", x, "T", T + p.K, fluid)
+        return sigma
 
     pass
 
