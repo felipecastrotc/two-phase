@@ -14,27 +14,27 @@ class Properties(object):
 
     v_sg = 0  # [m/s] -> Gas superficial velocity
     v_sl = 0  # [m/s] -> Liquid superficial velocity
-    v_m = 0   # [m/s] -> Mixture velocity
+    v_m = 0  # [m/s] -> Mixture velocity
 
     Q_g = 0  # [m^3/s] -> Gas volume rate
     Q_l = 0  # [m^3/s] -> Liquid volume rate
 
     gvfh = 0  # [-] Gas void fraction in %
 
-    d = 0  # [m] -> Tube diameter
+    d = 0  # [m] -> Pipe diameter
 
-    theta = 90  # [°] -> Tube inclination
+    theta = 90  # [°] -> Pipe inclination
 
     # Fluids
-    liq = 'water'
-    gas = 'air'
+    liq = "water"
+    gas = "air"
 
     # Properties functions
-    rho_l_func = (lambda x, y: x + y)
-    rho_g_func = (lambda x, y: x + y)
+    rho_l_func = lambda x, y: x + y
+    rho_g_func = lambda x, y: x + y
 
-    mu_l_func = (lambda x, y: x + y)
-    mu_g_func = (lambda x, y: x + y)
+    mu_l_func = lambda x, y: x + y
+    mu_g_func = lambda x, y: x + y
 
     rho_l_default = False
     rho_g_default = False
@@ -51,30 +51,30 @@ class Properties(object):
         #  Check the defined variables
         T = p.T if not T else T
         P = p.P if not P else P
-        fluid = 'liq' if not fluid else fluid
+        fluid = "liq" if not fluid else fluid
         # Check if rho_type is already defined
         if not rho_type:
             if callable(foo):
                 # Use the passed function
                 rho_val = foo(T, P)
-            elif fluid is 'liq':
+            elif fluid is "liq":
                 if p.rho_l_default:
                     # Use custom function
                     rho_val = p.rho_l_func(T, P)
                 else:
                     # Use coolprop library to get the fluid properties
-                    rho_val = cp.PropsSI('D', 'T', T + p.K, 'P', P, p.liq)
-            elif fluid is 'gas':
+                    rho_val = cp.PropsSI("D", "T", T + p.K, "P", P, p.liq)
+            elif fluid is "gas":
                 if p.rho_g_default:
                     # Use custom function
                     rho_val = p.rho_l_func(T, P)
                 else:
                     # Use coolprop library to get the fluid properties
-                    rho_val = cp.PropsSI('D', 'T', T + p.K, 'P', P, p.gas)
+                    rho_val = cp.PropsSI("D", "T", T + p.K, "P", P, p.gas)
             else:
                 # Unknown fluid
                 # Use coolprop library to get the fluid properties
-                rho_val = cp.PropsSI('D', 'T', T + p.K, 'P', P, fluid)
+                rho_val = cp.PropsSI("D", "T", T + p.K, "P", P, fluid)
         return rho_val
 
     @staticmethod
@@ -86,30 +86,30 @@ class Properties(object):
         #  Check the defined variables
         T = p.T if not T else T
         P = p.P if not P else P
-        fluid = 'liq' if not fluid else fluid
+        fluid = "liq" if not fluid else fluid
         # Check if mu is already defined
         if not mu:
             if callable(foo):
                 # Use the passed function
                 mu = foo(T, P)
-            elif fluid is 'liq':
+            elif fluid is "liq":
                 if p.mu_l_default:
                     # Use custom function
                     mu = p.mu_l_func(T, P)
                 else:
                     # Use coolprop library to get the fluid properties
-                    mu = cp.PropsSI('V', 'T', T + p.K, 'P', P, p.liq)
-            elif fluid is 'gas':
+                    mu = cp.PropsSI("V", "T", T + p.K, "P", P, p.liq)
+            elif fluid is "gas":
                 if p.mu_g_default:
                     # Use custom function
                     mu = p.mu_l_func(T, P)
                 else:
                     # Use coolprop library to get the fluid properties
-                    mu = cp.PropsSI('V', 'T', T + p.K, 'P', P, p.gas)
+                    mu = cp.PropsSI("V", "T", T + p.K, "P", P, p.gas)
             else:
                 # Unknown fluid
                 # Use coolprop library to get the fluid properties
-                mu = cp.PropsSI('V', 'T', T + p.K, 'P', P, fluid)
+                mu = cp.PropsSI("V", "T", T + p.K, "P", P, fluid)
         return mu
 
     pass
@@ -122,9 +122,8 @@ class Convert(object):
     def __init__(self):
         pass
 
-     # ==================== General convertions ===========================
-    def kgmin2m3s(self, m, T=None, P=None, d=None, rho=None, foo=None,
-                  fluid=None):
+    # ==================== General convertions ===========================
+    def kgmin2m3s(self, m, T=None, P=None, d=None, rho=None, foo=None, fluid=None):
         # m -> [kg/min]
         # t -> [°C]
         # p -> [Pa]
@@ -155,7 +154,7 @@ class Convert(object):
         # Check if the variable exists
         d = p.d if not d else d
         # Calculate
-        vs = Q / (np.pi * ((d / 2)**2))
+        vs = Q / (np.pi * ((d / 2) ** 2))
         return vs
 
     pass

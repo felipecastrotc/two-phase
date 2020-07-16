@@ -99,58 +99,65 @@ class Homogeneous(object):
         return v_sg / (v_sg + v_sl)
 
     @staticmethod
-    def Rem(rho_g, rho_l, mu_g, mu_l, d, v_sg=None, v_sl=None, v_m=None,
-            gvf=None):
-        # Check if it was passed the mixture velocity or it is possible 
+    def Rem(rho_g, rho_l, mu_g, mu_l, d, v_sg=None, v_sl=None, v_m=None, gvf=None):
+        # Check if it was passed the mixture velocity or it is possible
         # to calculate the mixture velocity.
         if not v_m:
             if not v_sl or not v_sg:
-                txt = 'Please pass the mixture velocity or the' +
-                      ' superficial velocities!'
+                txt = (
+                    "Please pass the mixture velocity or the"
+                    + " superficial velocities!"
+                )
                 raise ValueError(txt)
             else:
                 v_m = v_sg + v_sl
         # Check if it was passed the GVF or it is possible to calculate it.
         if not gvf:
             if not v_sl or not v_sg:
-                txt = 'Please pass the GVF explicitly or pass the' + 
-                      'superficial velocities!'
+                txt = (
+                    "Please pass the GVF explicitly or pass the"
+                    + "superficial velocities!"
+                )
                 raise ValueError(txt)
             else:
                 # Get the homogeneous GVF
                 gvf = Homogeneous.gvf(v_sg, v_sl)
-        
+
         # Calculate mixture the properties
         rho_m = Homogeneous.rho_m(gvf, rho_g, rho_l)
         mu_m = Homogeneous.mu_m(gvf, mu_g, mu_l)
         # Get the mixture velocity
-        return (rho_m*(v_m)*d)/mu_m
+        return (rho_m * (v_m) * d) / mu_m
 
     @staticmethod
     def rho_m(gvf, rho_g, rho_l):
         # gvf [0, 1]
-        return gvf*rho_g + (1 - gvf)*rho_l
+        return gvf * rho_g + (1 - gvf) * rho_l
 
     @staticmethod
     def mu_m(gvf, mu_g, mu_l):
         # gvf [0, 1]
-        return gvf*mu_g + (1 - gvf)*mu_l
+        return gvf * mu_g + (1 - gvf) * mu_l
 
     @staticmethod
     def dp_g(rho_m, g, theta):
-        return rho_m*g*np.sin(np.deg2rad(theta))
+        return rho_m * g * np.sin(np.deg2rad(theta))
 
     @staticmethod
     def dp_f(f_f, rho_m, v_m, d):
-        return (f_f*rho_m*(v_m)**2)/(2*d)
+        return (f_f * rho_m * (v_m) ** 2) / (2 * d)
 
     pass
 
 
 class Pattern(object):
 
-    taitel1980_ptt = {0: 'Single-phase', 1: 'Dispersed bubbles', 2: 'Slug',
-                      3: 'Annular'}
+    taitel1980_ptt = {
+        0: "Single-phase",
+        1: "Dispersed bubbles",
+        2: "Slug",
+        3: "Annular",
+    }
 
     @staticmethod
     def taitel1980(v_sg, v_sl, rho_g, rho_l, sigma, g, text=False):
@@ -159,10 +166,12 @@ class Pattern(object):
         if v_sg == 0:
             ptt = 0
         else:
-            v_sg_e = 3.1*((sigma*g*(rho_l - rho_g))**0.25)/rho_g**0.5
-            v_sl_a = 3*v_sg - 1.15*(g*sigma*(rho_l - rho_g)/rho_l**2)**0.25
+            v_sg_e = 3.1 * ((sigma * g * (rho_l - rho_g)) ** 0.25) / rho_g ** 0.5
+            v_sl_a = (
+                3 * v_sg - 1.15 * (g * sigma * (rho_l - rho_g) / rho_l ** 2) ** 0.25
+            )
             if v_sg > v_sg_e:
-              ptt = 3
+                ptt = 3
             else:
                 if v_sl > v_sl_a:
                     ptt = 1
@@ -171,7 +180,7 @@ class Pattern(object):
                 pass
             pass
         pass
-        
+
         if text:
             return Pattern.taitel1980_ptt[ptt]
         else:
@@ -182,36 +191,35 @@ class Pattern(object):
 
 
 class Friction(object):
-
     @staticmethod
     def blasius_fanning(Re, lmt=2300):
-        # Shoham 2006 - Pag. 19 -> "For all practical purposes, the 
+        # Shoham 2006 - Pag. 19 -> "For all practical purposes, the
         # correlation covering the widest range of the Reynolds number
         #  is n = 0.2, C F = 0.046 for the Fanning friction factor, and
         #  C M = 0.184 for the Moody friction factor."
         if Re < lmt:
-            f = 16*Re**(-1)
+            f = 16 * Re ** (-1)
         else:
-            f = 0.046*Re**(-0.2)
+            f = 0.046 * Re ** (-0.2)
 
         return f
 
     @staticmethod
     def blasius_moody(Re, lmt=2300):
-        # Shoham 2006 - Pag. 19 -> "For all practical purposes, the 
+        # Shoham 2006 - Pag. 19 -> "For all practical purposes, the
         # correlation covering the widest range of the Reynolds number
         #  is n = 0.2, C F = 0.046 for the Fanning friction factor, and
         #  C M = 0.184 for the Moody friction factor."
         if Re < lmt:
-            f = 64*Re**(-1)
+            f = 64 * Re ** (-1)
         else:
-            f = 0.184*Re**(-0.2)
-            
+            f = 0.184 * Re ** (-0.2)
+
         return f
 
     @staticmethod
     def moody(Re, e):
-        return 0.0055*(1 + (2e4*e + 1e6/Re)**(1/3))
+        return 0.0055 * (1 + (2e4 * e + 1e6 / Re) ** (1 / 3))
 
     @staticmethod
     def fanning_normalized(Re, lambda_l):
@@ -235,7 +243,7 @@ class Friction(object):
         # else:
         #     s = np.log(y)/(-0.0523 + 3.182*np.log(y) - 0.875 *
         #             (np.log(y)**2) + 0.01853*(np.log(y)**4))
-        
+
         # f_ = np.exp(s)*f_n
         raise NotImplementedError
 

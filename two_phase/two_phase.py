@@ -1,6 +1,7 @@
 import numpy as np
 import CoolProp.CoolProp as cp
 import sklearn.metrics as mtr
+
 # from .utils import Convert
 from .utils import Properties as p
 from .utils import Convert
@@ -8,8 +9,7 @@ from .models_utils import *
 
 
 class TwoPhase(object):
-
-    def __init__(self, d=None, theta=None, gas='air', liquid='water'):
+    def __init__(self, d=None, theta=None, gas="air", liquid="water"):
         # Physical properties
         p.d = 0 if not d else d  # [m] -> Tube diameter
         self.theta = 90 if not theta else theta  # [°] -> Tube angle
@@ -48,7 +48,7 @@ class TwoPhase(object):
     @staticmethod
     def c0_c1_s(v_sg, v_m, gvf):
         # Get the Y and X to fit a 1 order polynomial
-        y_fit = v_sg/gvf
+        y_fit = v_sg / gvf
         x_fit = v_m
         # Fit using Least squares
         coef = np.polyfit(x_fit, y_fit, 1)
@@ -87,7 +87,7 @@ class TwoPhase(object):
     @v_sg.setter  # v_sg [m/s] -> Gas superficial velocity
     def v_sg(self, value):
         p.v_sg = value
-        p.Q_g = p.v_sg * (np.pi * ((p.d / 4)**2))
+        p.Q_g = p.v_sg * (np.pi * ((p.d / 4) ** 2))
         # Legacy version that check for zero division
         # if (p.v_sg + p.v_sl) != 0:
         p.gvfh = Homogeneous.gvf(p.v_sg, p.v_sl)
@@ -99,11 +99,11 @@ class TwoPhase(object):
     @v_sl.setter  # v_sl [m/s] -> Liquid superficial velocity
     def v_sl(self, value):
         p.v_sl = value
-        p.Q_l = p.v_sl * (np.pi * ((p.d / 4)**2))
+        p.Q_l = p.v_sl * (np.pi * ((p.d / 4) ** 2))
         # Legacy version that check for zero division
         # if (p.v_sg + p.v_sl) != 0:
         p.gvfh = Homogeneous.gvf(p.v_sg, p.v_sl)
-    
+
     @property  # v_m [m/s] -> Mixture velocity
     def v_m(self):
         return p.v_mr
