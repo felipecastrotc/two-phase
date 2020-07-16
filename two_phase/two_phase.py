@@ -3,16 +3,17 @@ import CoolProp.CoolProp as cp
 import sklearn.metrics as mtr
 
 # from .utils import Convert
-from .utils import Properties as p
-from .utils import Convert
+from .flow_utils import Properties as p
+from .flow_utils import Convert
 from .models_utils import *
 
 
 class TwoPhase(object):
-    def __init__(self, d=None, theta=None, gas="air", liquid="water"):
+    def __init__(self, d=None, theta=None, l=None, gas="air", liquid="water"):
         # Physical properties
-        p.d = 0 if not d else d  # [m] -> Tube diameter
-        self.theta = 90 if not theta else theta  # [°] -> Tube angle
+        p.d = 0 if d is None else d  # [m] -> Tube diameter
+        p.l = 0 if l is None else l  # [m] -> Tube diameter
+        self.theta = 90 if theta is None else theta  # [°] -> Tube angle
         # Fluids
         p.liq = liquid
         p.gas = gas
@@ -23,7 +24,9 @@ class TwoPhase(object):
         self.eb_vel = EBVelUtil()
         # Utils for the Homogeneous model
         self.hg = HomogeneousUtil
-
+        
+        #Utils for flow pattern
+        self.ptt = PatternUtil
         # Convert utils
         self.convert = Convert
 

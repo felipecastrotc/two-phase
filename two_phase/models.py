@@ -1,5 +1,5 @@
 import numpy as np
-from .utils import Properties as p
+from .flow_utils import Properties as p
 
 
 class EBVelocity(object):
@@ -155,37 +155,74 @@ class Pattern(object):
     taitel1980_ptt = {
         0: "Single-phase",
         1: "Dispersed bubbles",
-        2: "Slug",
-        3: "Annular",
+        2: "Bubbles",
+        3: "Slug",
+        4: "Churn",
+        5: "Annular",
     }
 
     @staticmethod
-    def taitel1980(v_sg, v_sl, rho_g, rho_l, sigma, g, text=False):
+    def taitel1980(v_sg, v_sl, rho_g, rho_l, mu_l, sigma, g, l, d, text=False):
         # TODO: documentation and references
 
         if v_sg == 0:
             ptt = 0
         else:
-            v_sg_e = 3.1 * ((sigma * g * (rho_l - rho_g)) ** 0.25) / rho_g ** 0.5
-            v_sl_a = (
-                3 * v_sg - 1.15 * (g * sigma * (rho_l - rho_g) / rho_l ** 2) ** 0.25
+            # Annular
+            # when v_sg > v_sg_j -> Annular
+            v_sg_j = (3.1 * (sigma * g * (rho_l - rho_g)) ** 0.25) / (rho_g ** 0.5)
+
+            # Dispersed Bubble
+            # when f >= 0 or v_sl_g > v_sl -> Dispersed bubble
+            # Euqation 4.23 of Shoham 2006
+            v_m = v_sl + v_sg
+            f_l1 = (
+                2
+                * (((0.4 * sigma) / ((rho_l - rho_g) * g)) ** 0.5)
+                * ((rho_l / sigma) ** 0.6)
             )
-            if v_sg > v_sg_e:
+            f_l2 = ((((2 * 0.046) / d) * ((rho_l * d / mu_l) ** -0.2)) ** 0.4) * (
+                v_m ** 1.12
+            )
+            f_r = 0.725 + 4.15 * ((v_sg / v_m) ** 0.5)
+            f = f_l1 * f_l2 - f_r
+            # Equation 4.24 of Shoham 2006
+            v_sl_g = (v_sg - v_sg * 0.52) / 0.52
+
+            # Bubble-Slug - Equation 4.13 of Shoham 2006
+            # when v_sg > v_sg_e -> Slug or Churn
+            v_sg_e = (
+                v_sl + 1.15 * ((g * (rho_l - rho_g) * sigma / (rho_l ** 2.0)) ** 0.25)
+            ) / 3.0
+            # Check existence of bubble flow - Equation 4.15 of Shoham 2006
+            chk_bubble = (
+                ((rho_l ** 2.0) * g * (d ** 2.0) / ((rho_l - rho_g) * sigma)) ** 0.25
+                - 4.36
+            ) >= 0
+
+            # Slug-Churn - Equation 4.31 of Shoham 2006
+            # when v_sg > v_sg_h -> Churn flow
+            v_sg_h = (l / (d * 40.6) - 0.22) * ((g * d) ** 0.5) - v_sl
+
+            # Conditions
+            if v_sg > v_sg_j:
+                ptt = 5
+            elif (f >= 0) and (v_sl > v_sl_g):
+                ptt = 1
+            elif v_sg < v_sg_e:
+                if chk_bubble:
+                    ptt = 2
+                else:
+                    ptt = 3
+            elif (v_sg > v_sg_e) and (v_sg < v_sg_h):
                 ptt = 3
             else:
-                if v_sl > v_sl_a:
-                    ptt = 1
-                else:
-                    ptt = 2
-                pass
-            pass
-        pass
+                ptt = 4
 
         if text:
             return Pattern.taitel1980_ptt[ptt]
         else:
             return ptt
-        pass
 
     pass
 

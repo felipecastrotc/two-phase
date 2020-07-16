@@ -1,2 +1,2 @@
 from .two_phase import TwoPhase
-from .utils import Properties
+from .flow_utils import Properties
