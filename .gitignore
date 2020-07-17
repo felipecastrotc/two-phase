@@ -1,4 +1,4 @@
-table_exp_points.xlsx
+_table.xlsx
 _devel_tp.py
 _matlab/
 
@@ -9,6 +9,7 @@ _matlab/
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
 
 # C extensions
 *.so
