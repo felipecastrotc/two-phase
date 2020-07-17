@@ -1,9 +1,7 @@
 import numpy as np
-from .flow_utils import Properties as p
-from .models import EBVelocity
-from .models import Homogeneous
-from .models import Pattern
 
+from .flow_utils import Properties as p
+from .models import EBVelocity, Homogeneous, Pattern
 from .utils import get_kwargs
 
 

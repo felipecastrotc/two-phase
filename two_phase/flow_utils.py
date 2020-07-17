@@ -1,5 +1,5 @@
-import numpy as np
 import CoolProp.CoolProp as cp
+import numpy as np
 
 
 class Properties(object):
@@ -32,7 +32,7 @@ class Properties(object):
 
     # Properties functions
     sigma_func = lambda x, y: x + y
-    
+
     rho_l_func = lambda x, y: x + y
     rho_g_func = lambda x, y: x + y
 
@@ -40,7 +40,7 @@ class Properties(object):
     mu_g_func = lambda x, y: x + y
 
     sigma_default = False
-    
+
     rho_l_default = False
     rho_g_default = False
 
@@ -116,8 +116,7 @@ class Properties(object):
             # Use coolprop library to get the fluid properties
             mu = cp.PropsSI("V", "T", T + p.K, "P", P, fluid)
         return mu
-    
-    
+
     @staticmethod
     def sigma(T=None, x=None, foo=None, fluid=None):
         # x = quality
@@ -126,7 +125,7 @@ class Properties(object):
         p = Properties
         #  Check the defined variables
         T = p.T if T is None else T
-        x = 0. if x is None else x
+        x = 0.0 if x is None else x
         fluid = p.liq if fluid is None else fluid
         # Check which method to use
         if callable(foo):

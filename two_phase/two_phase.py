@@ -1,10 +1,9 @@
-import numpy as np
 import CoolProp.CoolProp as cp
-import sklearn.metrics as mtr
+import numpy as np
 
 # from .utils import Convert
-from .flow_utils import Properties as p
 from .flow_utils import Convert
+from .flow_utils import Properties as p
 from .models_utils import *
 
 
@@ -24,8 +23,8 @@ class TwoPhase(object):
         self.eb_vel = EBVelUtil()
         # Utils for the Homogeneous model
         self.hg = HomogeneousUtil
-        
-        #Utils for flow pattern
+
+        # Utils for flow pattern
         self.ptt = PatternUtil
         # Convert utils
         self.convert = Convert
@@ -58,7 +57,8 @@ class TwoPhase(object):
         # Get the predictions
         y_pred = np.polyval(coef, x_fit)
         # Calculate the R²
-        r2 = mtr.r2_score(y_fit, y_pred)
+        # TODO: add r2 score manually
+        # r2 = mtr.r2_score(y_fit, y_pred)
         return coef, r2
 
     # ======================== Callbacks ================================
