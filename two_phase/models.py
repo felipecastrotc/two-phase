@@ -177,18 +177,23 @@ class Pattern(object):
             # when f >= 0 or v_sl_g > v_sl -> Dispersed bubble
             # Euqation 4.23 of Shoham 2006
             v_m = v_sl + v_sg
+            # Left hand side part 1
             f_l1 = (
                 2
                 * (((0.4 * sigma) / ((rho_l - rho_g) * g)) ** 0.5)
                 * ((rho_l / sigma) ** 0.6)
             )
+            # Left hand side part 2
             f_l2 = ((((2 * 0.046) / d) * ((rho_l * d / mu_l) ** -0.2)) ** 0.4) * (
                 v_m ** 1.12
             )
+            # Right hand side
             f_r = 0.725 + 4.15 * ((v_sg / v_m) ** 0.5)
+            # Full equation
             f = f_l1 * f_l2 - f_r
+
             # Equation 4.24 of Shoham 2006
-            v_sl_g = (v_sg - v_sg * 0.52) / 0.52
+            v_sl_g = v_sg / 0.52 - v_sg
 
             # Bubble-Slug - Equation 4.13 of Shoham 2006
             # when v_sg > v_sg_e -> Slug or Churn
@@ -207,17 +212,23 @@ class Pattern(object):
 
             # Conditions
             if v_sg > v_sg_j:
+                # Annular
                 ptt = 5
             elif (f >= 0) and (v_sl > v_sl_g):
+                # Dispersed bubbles
                 ptt = 1
             elif v_sg < v_sg_e:
                 if chk_bubble:
+                    # Bubbles
                     ptt = 2
                 else:
+                    # Slug
                     ptt = 3
             elif (v_sg > v_sg_e) and (v_sg < v_sg_h):
+                # Slug
                 ptt = 3
             else:
+                # Churn
                 ptt = 4
 
         if text:

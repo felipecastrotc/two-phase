@@ -31,5 +31,3 @@ P_0 = tp.P[0]  # Pressure
 T_0 = tp.T[0]  # Temperature
 q_g0 = tp.Q_g[0]  # Gas flow rate
 v_sg0 = tp.v_sg[0]  # Gas superficial velocity
-
-from two_phase import __version__
