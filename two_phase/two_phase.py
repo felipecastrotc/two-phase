@@ -4,10 +4,19 @@ import numpy as np
 # from .utils import Convert
 from .flow_utils import Convert
 from .flow_utils import Properties as p
+from .flow_utils import PropertyUtil
 from .models_utils import *
 
 
 class TwoPhase(object):
+
+    # Property utils
+    rho_l = PropertyUtil(prop="rho", fluid="liq")
+    rho_g = PropertyUtil(prop="rho", fluid="gas")
+    mu_l = PropertyUtil(prop="mu", fluid="liq")
+    mu_g = PropertyUtil(prop="mu", fluid="gas")
+    sigma = PropertyUtil(prop="sigma", fluid="liq")
+
     def __init__(self, d=None, theta=None, l=None, gas="air", liquid="water"):
         # Physical properties
         p.d = 0 if d is None else d  # [m] -> Tube diameter

@@ -50,6 +50,8 @@ P_0 = tp.P[0]  # Pressure
 T_0 = tp.T[0]  # Temperature
 q_g0 = tp.Q_g[0]  # Gas flow rate
 v_sg0 = tp.v_sg[0]  # Gas superficial velocity
+rho_g = tp.rho_g[0]  # Gas specific mass
+mu_g = tp.mu_g[0]  # Gas viscosity
 ```
 
 ## Roadmap

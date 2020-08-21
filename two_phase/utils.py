@@ -1,7 +1,9 @@
 # Check if a variable is iterable or not
-def iterable(obj):
+def iterable(obj, chk_str=False):
     try:
         iter(obj)
+        if type(obj) is str and chk_str:
+            raise "It is a string!"
     except Exception:
         return False
     else:

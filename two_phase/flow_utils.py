@@ -1,5 +1,6 @@
 import CoolProp.CoolProp as cp
 import numpy as np
+from .utils import iterable
 
 
 class Properties(object):
@@ -188,3 +189,24 @@ class Convert(object):
     pass
 
 
+class PropertyUtil(object):
+
+    p = Properties
+
+    def __init__(self, prop="rho", fluid="liq"):
+        self.prop = prop
+        self.fluid = fluid
+
+    def __getitem__(self, index):
+        # Simpler variable names
+        T = self.p.T
+        P = self.p.P
+        # Get fluid
+        fluid = self.p.liq if self.fluid is "liq" else self.p.gas
+        # Get property
+        if self.prop is "rho":
+            return self.p.rho(T=T[index], P=P[index], foo=None, fluid=fluid)
+        elif self.prop is "mu":
+            return self.p.mu(T=T[index], P=P[index], foo=None, fluid=fluid)
+        elif self.prop is "sigma":
+            return self.p.sigma(T=T[index], x=0.0, foo=None, fluid=fluid)
