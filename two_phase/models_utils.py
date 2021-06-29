@@ -1,12 +1,13 @@
 import numpy as np
 
-from .flow_utils import Properties as p
 from .models import EBVelocity, Homogeneous, Pattern
 from .utils import get_kwargs
 
 
 class EBVelUtil(object):
-    def __init__(self):
+    def __init__(self, p):
+        # Properties
+        self.p = p
         # Models
         self.functions = {
             "nicklin1962": self.nicklin1962,
@@ -34,8 +35,9 @@ class EBVelUtil(object):
         else:
             return np.array([eb[key]() for key in eb.keys()])
 
-    @staticmethod
-    def nicklin1962(v_sg=None, v_sl=None, d=None):
+    def nicklin1962(self, v_sg=None, v_sl=None, d=None):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sl = p.v_sl if not v_sl else v_sl
         v_sg = p.v_sg if not v_sg else v_sg
@@ -43,8 +45,9 @@ class EBVelUtil(object):
         # Calculate and return the value
         return EBVelocity.nicklin1962(v_sg, v_sl, d, p.g)
 
-    @staticmethod
-    def bendiksen1984(v_sg=None, v_sl=None, d=None, theta=None):
+    def bendiksen1984(self, v_sg=None, v_sl=None, d=None, theta=None):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if not v_sg else v_sg
         v_sl = p.v_sl if not v_sl else v_sl
@@ -53,8 +56,9 @@ class EBVelUtil(object):
         # Calculate and return the value
         return EBVelocity.bendiksen1984(v_sg, v_sl, d, theta, p.g)
 
-    @staticmethod
-    def theron1989(v_sg=None, v_sl=None, d=None, theta=None):
+    def theron1989(self, v_sg=None, v_sl=None, d=None, theta=None):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if not v_sg else v_sg
         v_sl = p.v_sl if not v_sl else v_sl
@@ -63,32 +67,26 @@ class EBVelUtil(object):
         # Calculate and return the value
         return EBVelocity.theron1989(v_sg, v_sl, d, theta, p.g)
 
-    @staticmethod
     def petalasaziz2000(
-        v_sg=None,
-        v_sl=None,
-        rho_l=None,
-        mu_l=None,
-        d=None,
-        theta=None,
-        foo=None,
-        fluid=None,
+        self, v_sg=None, v_sl=None, rho_l=None, mu_l=None, d=None, theta=None,
     ):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if not v_sg else v_sg
         v_sl = p.v_sl if not v_sl else v_sl
         d = p.d if not d else d
         theta = p.theta if not theta else theta
-        fluid = "liq" if not fluid else fluid
         # Calculate the liquid specific mass
-        rho_l = p.rho(T=None, P=None, foo=foo, fluid=fluid) if rho_l is None else rho_l
+        rho_l = p.rho_l.value if rho_l is None else rho_l
         # Calculate the liquid viscosity
-        mu_l = p.mu(T=None, P=None, foo=foo, fluid=fluid) if mu_l is None else mu_l
+        mu_l = p.mu_l.value if mu_l is None else mu_l
         # Calculate and return the value
         return EBVelocity.petalasaziz2000(v_sg, v_sl, rho_l, mu_l, d, theta, p.g)
 
-    @staticmethod
-    def dukler1985(v_sg=None, v_sl=None):
+    def dukler1985(self, v_sg=None, v_sl=None):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if not v_sg else v_sg
         v_sl = p.v_sl if not v_sl else v_sl
@@ -98,48 +96,48 @@ class EBVelUtil(object):
 
 
 class HomogeneousUtil(object):
-    def __init__(self):
+    def __init__(self, p):
+        # Properties
+        self.p = p
         pass
 
     # ===================== Homogeneous model utility ========================
     def Rem(
+        self,
         v_sg=None,
         v_sl=None,
         rho_l=None,
         rho_g=None,
         mu_l=None,
         mu_g=None,
-        T=None,
-        P=None,
         d=None,
-        gas=None,
-        liq=None,
         gvf=None,
-        foo=None,
     ):
-
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if v_sg is None else v_sg
         v_sl = p.v_sl if v_sl is None else v_sl
         d = p.d if d is None else d
-        foo = [None] * 4 if type(foo) is not list else foo
 
         # Get the fluid properties
-        rho_l = p.rho(T=T, P=P, foo=foo[0], fluid="liq") if rho_l is None else rho_l
-        rho_g = p.rho(T=T, P=P, foo=foo[1], fluid="gas") if rho_g is None else rho_g
-        mu_l = p.mu(T=T, P=P, foo=foo[2], fluid="liq") if mu_l is None else mu_l
-        mu_g = p.mu(T=T, P=P, foo=foo[3], fluid="gas") if mu_g is None else mu_g
+        rho_l = p.rho_l.value if rho_l is None else rho_l
+        rho_g = p.rho_g.value if rho_g is None else rho_g
+        mu_l = p.mu_l.value if mu_l is None else mu_l
+        mu_g = p.mu_g.value if mu_g is None else mu_g
         return Homogeneous.Rem(v_sg, v_sl, rho_l, rho_g, mu_l, mu_g, d, gvf)
 
     pass
 
 
 class PatternUtil(object):
-    def __init__(self):
+    def __init__(self, p):
+        # Properties
+        self.p = p
         pass
 
-    @staticmethod
     def taitel1980(
+        self,
         d=None,
         l=None,
         v_sg=None,
@@ -148,12 +146,10 @@ class PatternUtil(object):
         rho_l=None,
         mu_l=None,
         sigma=None,
-        T=None,
-        P=None,
-        x=None,
-        foo=None,
         text=False,
     ):
+        # Simpler name
+        p = self.p
         # Return the list of flow patterns
 
         # Check for default variables
@@ -161,15 +157,14 @@ class PatternUtil(object):
         l = p.l if l is None else l
         v_sg = p.v_sg if v_sg is None else v_sg
         v_sl = p.v_sl if v_sl is None else v_sl
-        foo = [None] * 3 if type(foo) is not list else foo
 
         # TODO: Consider changing fluid var from gas or liq to the value of coolprop
         # fluid
         # Set properties
-        rho_g = p.rho(T=T, P=P, foo=foo[1], fluid="gas") if rho_g is None else rho_g
-        rho_l = p.rho(T=T, P=P, foo=foo[0], fluid="liq") if rho_l is None else rho_l
-        mu_l = p.mu(T=T, P=P, foo=foo[0], fluid="liq") if mu_l is None else mu_l
-        sigma = p.sigma(T=T, x=x, foo=foo[2]) if sigma is None else sigma
+        rho_g = p.rho_g.value if rho_g is None else rho_g
+        rho_l = p.rho_l.value if rho_l is None else rho_l
+        mu_l = p.mu_l.value if mu_l is None else mu_l
+        sigma = p.sigma.value if sigma is None else sigma
 
         # Create a dictionary to pass to the function
         kwargs = {

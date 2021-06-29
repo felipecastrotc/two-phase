@@ -3,40 +3,39 @@ import numpy as np
 
 # from .utils import Convert
 from .flow_utils import Convert
-from .flow_utils import Properties as p
+from .flow_utils import Properties
 from .flow_utils import PropertyUtil
 from .models_utils import *
 
 
 class TwoPhase(object):
-
-    # Property utils
-    rho_l = PropertyUtil(prop="rho", fluid="liq")
-    rho_g = PropertyUtil(prop="rho", fluid="gas")
-    mu_l = PropertyUtil(prop="mu", fluid="liq")
-    mu_g = PropertyUtil(prop="mu", fluid="gas")
-    sigma = PropertyUtil(prop="sigma", fluid="liq")
-
     def __init__(self, d=None, theta=None, l=None, gas="air", liquid="water"):
-        # Physical properties
-        p.d = 0 if d is None else d  # [m] -> Tube diameter
-        p.l = 0 if l is None else l  # [m] -> Tube diameter
-        self.theta = 90 if theta is None else theta  # [°] -> Tube angle
-        # Fluids
-        p.liq = liquid
-        p.gas = gas
-        # Classes
         # Properties
-        self.prop = p
+        self.prop = Properties()
+        # Physical properties
+        self.prop.d = 0 if d is None else d  # [m] -> Tube diameter
+        self.prop.l = 0 if l is None else l  # [m] -> Tube diameter
+        self.prop.theta = 90 if theta is None else theta  # [°] -> Tube angle
+        # Fluids
+        self.prop.liq = liquid
+        self.prop.gas = gas
+        # Property utils
+        self.prop.rho_l = PropertyUtil(self.prop, prop="rho", phase="liq")
+        self.prop.rho_g = PropertyUtil(self.prop, prop="rho", phase="gas")
+        self.prop.mu_l = PropertyUtil(self.prop, prop="mu", phase="liq")
+        self.prop.mu_g = PropertyUtil(self.prop, prop="mu", phase="gas")
+        self.prop.sigma = PropertyUtil(self.prop, prop="sigma", phase="liq")
+
+        # Classes
         # Utils for the Elongated bubble velocity
-        self.eb_vel = EBVelUtil()
+        self.eb_vel = EBVelUtil(p=self.prop)
         # Utils for the Homogeneous model
-        self.hg = HomogeneousUtil
+        self.hg = HomogeneousUtil(p=self.prop)
 
         # Utils for flow pattern
-        self.ptt = PatternUtil
+        self.ptt = PatternUtil(p=self.prop)
         # Convert utils
-        self.convert = Convert
+        self.convert = Convert(p=self.prop)
 
         pass
 
@@ -74,58 +73,60 @@ class TwoPhase(object):
 
     @property  # T [C] -> Temperature
     def T(self):
-        return p.T
+        return self.prop.T
 
     @T.setter  # T [C] -> Temperature
     def T(self, value):
-        p.T = value
+        self.prop.T = value
 
     @property  # P [Pa] -> Total pressure
     def P(self):
-        return p.P
+        return self.prop.P
 
     @P.setter  # P [Pa] -> Total pressure
     def P(self, value):
-        p.P = value
+        self.prop.P = value
 
     @property  # v_sg [m/s] -> Gas superficial velocity
     def gvfh(self):
-        return p.gvfh
+        return self.prop.gvfh
 
     @property  # v_sg [m/s] -> Gas superficial velocity
     def v_sg(self):
-        return p.v_sg
+        return self.prop.v_sg
 
     @v_sg.setter  # v_sg [m/s] -> Gas superficial velocity
     def v_sg(self, value):
+        p = self.prop
         p.v_sg = value
         p.Q_g = p.v_sg * (np.pi * ((p.d / 4) ** 2))
-        # Legacy version that check for zero division
-        # if (p.v_sg + p.v_sl) != 0:
+        # Update dependent variables
         p.gvfh = Homogeneous.gvf(p.v_sg, p.v_sl)
+        p.v_m = p.v_sl + p.v_sg
 
     @property  # v_sl [m/s] -> Liquid superficial velocity
     def v_sl(self):
-        return p.v_sl
+        return self.prop.v_sl
 
     @v_sl.setter  # v_sl [m/s] -> Liquid superficial velocity
     def v_sl(self, value):
+        p = self.prop
         p.v_sl = value
-        p.Q_l = p.v_sl * (np.pi * ((p.d / 4) ** 2))
-        # Legacy version that check for zero division
-        # if (p.v_sg + p.v_sl) != 0:
+        # Update dependent variables
         p.gvfh = Homogeneous.gvf(p.v_sg, p.v_sl)
+        p.v_m = p.v_sl + p.v_sg
 
     @property  # v_m [m/s] -> Mixture velocity
     def v_m(self):
-        return p.v_mr
+        return self.prop.v_m
 
     @property  # Q_g [m^3/s] -> Gas volume rate
     def Q_g(self):
-        return p.Q_g
+        return self.prop.Q_g
 
     @Q_g.setter  # Q_g [m^3/s] -> Gas volume rate
     def Q_g(self, value):
+        p = self.prop
         p.Q_g = value
         p.v_sg = self.m3s2vs(value)
         # Legacy version that check for zero division
@@ -134,10 +135,11 @@ class TwoPhase(object):
 
     @property  # Q_l [m^3/s] -> Liquid volume rate
     def Q_l(self):
-        return p.v_sg
+        return self.prop.v_sg
 
     @Q_l.setter  # Q_l [m^3/s] -> Liquid volume rate
     def Q_l(self, value):
+        p = self.prop
         p.Q_l = value
         p.v_sl = self.m3s2vs(value)
         # Legacy version that check for zero division
@@ -146,28 +148,69 @@ class TwoPhase(object):
 
     @property  # d [m] -> diameter
     def d(self):
-        return p.d
+        return self.prop.d
 
     @d.setter  # d [m] -> diameter
     def d(self, value):
+        p = self.prop
         p.d = value
         p.v_sl = Convert.m3s2vs(p.Q_g)
         p.v_sg = Convert.m3s2vs(p.Q_l)
 
+    @property
+    def rho_l(self):
+        return self.prop.rho_l.value
+
+    @rho_l.setter
+    def rho_l(self, value):
+        self.prop.rho_l.value = value
+
+    @property
+    def rho_g(self):
+        return self.prop.rho_g.value
+
+    @rho_g.setter
+    def rho_g(self, value):
+        self.prop.rho_g.value = value
+
+    @property
+    def mu_l(self):
+        return self.prop.mu_l.value
+
+    @mu_l.setter
+    def mu_l(self, value):
+        self.prop.mu_l.value = value
+
+    @property
+    def mu_g(self):
+        return self.prop.mu_g.value
+
+    @mu_g.setter
+    def mu_g(self, value):
+        self.prop.mu_g.value = value
+
+    @property
+    def sigma(self):
+        return self.prop.sigma.value
+
+    @sigma.setter
+    def sigma(self, value):
+        self.prop.sigma.value = value
+
     # ======================== Class Options ================================
 
     def set_rho_l_func(self, foo, default=True):
-        p.rho_l_func = foo
-        p.rho_l_default = default
+        self.prop.rho_l_func = foo
+        self.prop.rho_l_default = default
 
     def set_rho_g_func(self, foo, default=True):
-        p.rho_g_func = foo
-        p.rho_g_default = default
+        self.prop.rho_g_func = foo
+        self.prop.rho_g_default = default
 
     def set_mu_l_func(self, foo, default=True):
-        p.mu_l_func = foo
-        p.mu_l_fdefault = default
+        self.prop.mu_l_func = foo
+        self.prop.mu_l_fdefault = default
 
     def set_mu_g_func(self, foo, default=True):
-        p.mu_g_func = foo
-        p.mu_g_fdefault = default
+        self.prop.mu_g_func = foo
+        self.prop.mu_g_fdefault = default
