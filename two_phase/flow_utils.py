@@ -85,7 +85,9 @@ class Convert(object):
         pass
 
     # ==================== General convertions ===========================
-    def kgmin2m3s(self, m, T=None, P=None, d=None, rho=None, foo=None, fluid=None, phase="liq"):
+    def kgmin2m3s(
+        self, m, T=None, P=None, d=None, rho=None, foo=None, fluid=None, phase="liq"
+    ):
         # m -> [kg/min]
         # t -> [°C]
         # p -> [Pa]
@@ -126,7 +128,6 @@ class Convert(object):
 
 
 class PropertyUtil(object):
-    
     def __init__(self, properties, prop="rho", phase="liq"):
         # Quality
         self.x = 0.0
