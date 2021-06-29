@@ -79,17 +79,22 @@ class Convert(object):
 
     p = Properties
 
-    def __init__(self):
+    def __init__(self, p):
+        # Properties
+        self.p = p
         pass
 
     # ==================== General convertions ===========================
-    def kgmin2m3s(self, m, T=None, P=None, d=None, rho=None, foo=None, fluid=None):
+    def kgmin2m3s(self, m, T=None, P=None, d=None, rho=None, foo=None, fluid=None, phase="liq"):
         # m -> [kg/min]
         # t -> [°C]
         # p -> [Pa]
         # d -> [m]
         # Get the specific mass [kg/m^3]
-        rho = self.p.rho(rho_type=rho, T=T, P=P, foo=foo, fluid=fluid)
+        if phase is "liq":
+            rho = self.rho_l.rho(self, T=T, P=P, foo=foo, fluid=fluid, phase=phase)
+        else:
+            rho = self.rho_g.rho(self, T=T, P=P, foo=foo, fluid=fluid, phase=phase)
         # Calculate m^3/s
         Q_f = m / (60 * rho)
         return Q_f
@@ -121,6 +126,7 @@ class Convert(object):
 
 
 class PropertyUtil(object):
+    
     def __init__(self, properties, prop="rho", phase="liq"):
         # Quality
         self.x = 0.0

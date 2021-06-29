@@ -21,11 +21,11 @@ class TwoPhase(object):
         self.prop.liq = liquid
         self.prop.gas = gas
         # Property utils
-        self.prop.rho_l = PropertyUtil(self.prop, prop="rho", fluid="liq")
-        self.prop.rho_g = PropertyUtil(self.prop, prop="rho", fluid="gas")
-        self.prop.mu_l = PropertyUtil(self.prop, prop="mu", fluid="liq")
-        self.prop.mu_g = PropertyUtil(self.prop, prop="mu", fluid="gas")
-        self.prop.sigma = PropertyUtil(self.prop, prop="sigma", fluid="liq")
+        self.prop.rho_l = PropertyUtil(self.prop, prop="rho", phase="liq")
+        self.prop.rho_g = PropertyUtil(self.prop, prop="rho", phase="gas")
+        self.prop.mu_l = PropertyUtil(self.prop, prop="mu", phase="liq")
+        self.prop.mu_g = PropertyUtil(self.prop, prop="mu", phase="gas")
+        self.prop.sigma = PropertyUtil(self.prop, prop="sigma", phase="liq")
         
         # Classes
         # Utils for the Elongated bubble velocity
@@ -36,7 +36,7 @@ class TwoPhase(object):
         # Utils for flow pattern
         self.ptt = PatternUtil(p=self.prop)
         # Convert utils
-        self.convert = Convert
+        self.convert = Convert(p=self.prop)
 
         pass
 
