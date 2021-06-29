@@ -93,7 +93,7 @@ class Convert(object):
         # p -> [Pa]
         # d -> [m]
         # Get the specific mass [kg/m^3]
-        if phase is "liq":
+        if phase == "liq":
             rho = self.rho_l.rho(self, T=T, P=P, foo=foo, fluid=fluid, phase=phase)
         else:
             rho = self.rho_g.rho(self, T=T, P=P, foo=foo, fluid=fluid, phase=phase)
@@ -153,16 +153,16 @@ class PropertyUtil(object):
         # use the fluid var to specify if you the gas or liquid function.
         phase = phase if phase is not None else self.phase
         if fluid is None:
-            fluid = self.p.liq if phase is "liq" else self.p.gas
+            fluid = self.p.liq if phase == "liq" else self.p.gas
         # Check if a custom function was passed
-        custom_func = self.p.rho_l_default if phase is "liq" else self.p.rho_g_default
+        custom_func = self.p.rho_l_default if phase == "liq" else self.p.rho_g_default
         # Check which method to use
         if callable(foo):
             # Use the passed function
             rho = foo(self.p)
         elif custom_func:
             # Use custom function
-            if phase is "liq":
+            if phase == "liq":
                 rho = self.p.rho_l_func(self.p)
             else:
                 rho = self.p.rho_g_func(self.p)
@@ -181,16 +181,16 @@ class PropertyUtil(object):
         # use the fluid var to specify if you the gas or liquid function
         phase = phase if phase is not None else self.phase
         if fluid is None:
-            fluid = self.p.liq if phase is "liq" else self.p.gas
+            fluid = self.p.liq if phase == "liq" else self.p.gas
         # Check if a custom function was passed
-        custom_func = self.p.mu_l_default if phase is "liq" else self.p.mu_g_default
+        custom_func = self.p.mu_l_default if phase == "liq" else self.p.mu_g_default
         # Check which method to use
         if callable(foo):
             # Use the passed function
             mu = foo(self.p)
         elif custom_func:
             # Use custom function
-            if phase is "liq":
+            if phase == "liq":
                 mu = self.p.mu_l_func(self.p)
             else:
                 mu = self.p.mu_g_func(self.p)
@@ -208,7 +208,7 @@ class PropertyUtil(object):
         # In case you want to use custom function saved on the class
         # use the fluid var to specify if you the gas or liquid function.
         if fluid is None:
-            fluid = self.p.liq if self.phase is "liq" else self.p.gas
+            fluid = self.p.liq if self.phase == "liq" else self.p.gas
         # Check if a custom function was passed
         custom_func = self.p.sigma_default
         # Check which method to use
@@ -227,11 +227,11 @@ class PropertyUtil(object):
 
     def update_cache(self):
         # Get property
-        if self.prop is "rho":
+        if self.prop == "rho":
             self.cached_value = self.rho()
-        elif self.prop is "mu":
+        elif self.prop == "mu":
             self.cached_value = self.mu()
-        elif self.prop is "sigma":
+        elif self.prop == "sigma":
             self.cached_value = self.p.sigma(self.x)
 
     @property
