@@ -4,4 +4,4 @@ from .flow_utils import Properties
 from .models import EBVelocity, Friction, Homogeneous, Pattern
 from .two_phase import TwoPhase
 
-__version__ = "0.1"
+__version__ = "0.1.1"
