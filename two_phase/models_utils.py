@@ -68,15 +68,7 @@ class EBVelUtil(object):
         return EBVelocity.theron1989(v_sg, v_sl, d, theta, p.g)
 
     def petalasaziz2000(
-        self,
-        v_sg=None,
-        v_sl=None,
-        rho_l=None,
-        mu_l=None,
-        d=None,
-        theta=None,
-        foo=None,
-        fluid=None,
+        self, v_sg=None, v_sl=None, rho_l=None, mu_l=None, d=None, theta=None,
     ):
         # Simpler name
         p = self.p
@@ -85,11 +77,10 @@ class EBVelUtil(object):
         v_sl = p.v_sl if not v_sl else v_sl
         d = p.d if not d else d
         theta = p.theta if not theta else theta
-        fluid = "liq" if not fluid else fluid
         # Calculate the liquid specific mass
-        rho_l = p.rho(T=None, P=None, foo=foo, fluid=fluid) if rho_l is None else rho_l
+        rho_l = p.rho_l.value if rho_l is None else rho_l
         # Calculate the liquid viscosity
-        mu_l = p.mu(T=None, P=None, foo=foo, fluid=fluid) if mu_l is None else mu_l
+        mu_l = p.mu_l.value if mu_l is None else mu_l
         # Calculate and return the value
         return EBVelocity.petalasaziz2000(v_sg, v_sl, rho_l, mu_l, d, theta, p.g)
 
@@ -119,13 +110,8 @@ class HomogeneousUtil(object):
         rho_g=None,
         mu_l=None,
         mu_g=None,
-        T=None,
-        P=None,
         d=None,
-        gas=None,
-        liq=None,
         gvf=None,
-        foo=None,
     ):
         # Simpler name
         p = self.p
@@ -133,13 +119,12 @@ class HomogeneousUtil(object):
         v_sg = p.v_sg if v_sg is None else v_sg
         v_sl = p.v_sl if v_sl is None else v_sl
         d = p.d if d is None else d
-        foo = [None] * 4 if type(foo) is not list else foo
 
         # Get the fluid properties
-        rho_l = p.rho(T=T, P=P, foo=foo[0], fluid="liq") if rho_l is None else rho_l
-        rho_g = p.rho(T=T, P=P, foo=foo[1], fluid="gas") if rho_g is None else rho_g
-        mu_l = p.mu(T=T, P=P, foo=foo[2], fluid="liq") if mu_l is None else mu_l
-        mu_g = p.mu(T=T, P=P, foo=foo[3], fluid="gas") if mu_g is None else mu_g
+        rho_l = p.rho_l.value if rho_l is None else rho_l
+        rho_g = p.rho_g.value if rho_g is None else rho_g
+        mu_l = p.mu_l.value if mu_l is None else mu_l
+        mu_g = p.mu_g.value if mu_g is None else mu_g
         return Homogeneous.Rem(v_sg, v_sl, rho_l, rho_g, mu_l, mu_g, d, gvf)
 
     pass
@@ -151,7 +136,6 @@ class PatternUtil(object):
         self.p = p
         pass
 
-    @staticmethod
     def taitel1980(
         self,
         d=None,
@@ -162,10 +146,6 @@ class PatternUtil(object):
         rho_l=None,
         mu_l=None,
         sigma=None,
-        T=None,
-        P=None,
-        x=None,
-        foo=None,
         text=False,
     ):
         # Simpler name
@@ -177,15 +157,14 @@ class PatternUtil(object):
         l = p.l if l is None else l
         v_sg = p.v_sg if v_sg is None else v_sg
         v_sl = p.v_sl if v_sl is None else v_sl
-        foo = [None] * 3 if type(foo) is not list else foo
 
         # TODO: Consider changing fluid var from gas or liq to the value of coolprop
         # fluid
         # Set properties
-        rho_g = p.rho(T=T, P=P, foo=foo[1], fluid="gas") if rho_g is None else rho_g
-        rho_l = p.rho(T=T, P=P, foo=foo[0], fluid="liq") if rho_l is None else rho_l
-        mu_l = p.mu(T=T, P=P, foo=foo[0], fluid="liq") if mu_l is None else mu_l
-        sigma = p.sigma(T=T, x=x, foo=foo[2]) if sigma is None else sigma
+        rho_g = p.rho_g.value if rho_g is None else rho_g
+        rho_l = p.rho_l.value if rho_l is None else rho_l
+        mu_l = p.mu_l.value if mu_l is None else mu_l
+        sigma = p.sigma.value if sigma is None else sigma
 
         # Create a dictionary to pass to the function
         kwargs = {
