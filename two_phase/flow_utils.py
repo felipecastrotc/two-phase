@@ -70,7 +70,7 @@ class Properties(object):
         if key != "curr_hash":
             dct = vars(self)
             f_dct = filter(lambda x: x[0] != "curr_hash", dct.items())
-            self.curr_hash = hash(frozenset(f_dct))
+            self.curr_hash = hash(frozenset([(i[0], str(i[1])) for i in f_dct]))
 
     pass
 
@@ -168,8 +168,8 @@ class PropertyUtil(object):
                 rho = self.p.rho_g_func(self.p)
         else:
             #  Check the defined variables
-            T = self.T if T is None else T
-            P = self.P if P is None else P
+            T = self.p.T if T is None else T
+            P = self.p.P if P is None else P
             K = self.p.K
             # Use coolprop library to get the fluid properties
             rho = cp.PropsSI("D", "T", T + K, "P", P, fluid)
@@ -196,8 +196,8 @@ class PropertyUtil(object):
                 mu = self.p.mu_g_func(self.p)
         else:
             #  Check the defined variables
-            T = self.T if T is None else T
-            P = self.P if P is None else P
+            T = self.p.T if T is None else T
+            P = self.p.P if P is None else P
             K = self.p.K
             # Use coolprop library to get the fluid properties
             mu = cp.PropsSI("V", "T", T + K, "P", P, fluid)
@@ -219,7 +219,7 @@ class PropertyUtil(object):
             sigma = self.p.sigma_func(x, self.p)
         else:
             #  Check the defined variables
-            T = self.T if T is None else T
+            T = self.p.T if T is None else T
             K = self.p.K
             # Use coolprop library to get the fluid properties
             sigma = cp.PropsSI("I", "Q", x, "T", T + K, fluid)
@@ -232,12 +232,12 @@ class PropertyUtil(object):
         elif self.prop == "mu":
             self.cached_value = self.mu()
         elif self.prop == "sigma":
-            self.cached_value = self.p.sigma(self.x)
+            self.cached_value = self.sigma(self.x)
 
     @property
     def value(self):
         if not self.manual:
-            if (self.p.curr_hash != self.p_hash) or (self.p_rho_l.value is not None):
+            if (self.p.curr_hash != self.p_hash) or (self.cached_value is None):
                 self.p_hash = self.p.curr_hash
                 self.update_cache()
         return self.cached_value
