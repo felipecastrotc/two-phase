@@ -9,137 +9,68 @@ class Properties(object):
     g = 9.81  # [m/s^2] -> Gravity
     K = 273.15  # [ºC] -> 0ºC in Kelvin
 
-    # Fluid flow properties
-    T = 0  # [°C] -> Temperature at the desired point
-    P = 0  # [Pa] -> Pressure at the desired point
+    def __init__(self):
 
-    v_sg = 0  # [m/s] -> Gas superficial velocity
-    v_sl = 0  # [m/s] -> Liquid superficial velocity
-    v_m = 0  # [m/s] -> Mixture velocity
+        # Fluid flow properties
+        self.T = 0  # [°C] -> Temperature at the desired point
+        self.P = 0  # [Pa] -> Pressure at the desired point
 
-    Q_g = 0  # [m^3/s] -> Gas volume rate
-    Q_l = 0  # [m^3/s] -> Liquid volume rate
+        self.v_sg = 0  # [m/s] -> Gas superficial velocity
+        self.v_sl = 0  # [m/s] -> Liquid superficial velocity
+        self.v_m = 0  # [m/s] -> Mixture velocity
 
-    gvfh = 0  # [-] Gas void fraction in %
+        self.Q_g = 0  # [m^3/s] -> Gas volume rate
+        self.Q_l = 0  # [m^3/s] -> Liquid volume rate
 
-    d = 0  # [m] -> Pipe diameter
-    l = 0  # [m] -> Pipe length
+        self.gvfh = 0  # [-] Gas void fraction in %
 
-    theta = 90  # [°] -> Pipe inclination
+        self.d = 0  # [m] -> Pipe diameter
+        self.l = 0  # [m] -> Pipe length
 
-    # Fluids
-    liq = "water"
-    gas = "air"
+        self.theta = 90  # [°] -> Pipe inclination
 
-    # Properties functions
-    sigma_func = lambda x, y: x + y
+        # Fluids
+        self.liq = "water"
+        self.gas = "air"
 
-    rho_l_func = lambda x, y: x + y
-    rho_g_func = lambda x, y: x + y
+        # Properties
+        self.rho_l = 0  # [kg/m³] -> Liquid specific mass
+        self.rho_g = 0  # [kg/m³] -> Gas specific mass
+        self.mu_l = 0  # [Pa*s] -> Liquid viscosity
+        self.mu_g = 0  # [Pa*s] -> Gas viscosity
+        self.sigma = 0  # [Pa] -> Surface tension
 
-    mu_l_func = lambda x, y: x + y
-    mu_g_func = lambda x, y: x + y
+        # Properties functions
+        self.sigma_func = lambda x, y: x + y
 
-    sigma_default = False
+        self.rho_l_func = lambda x, y: x + y
+        self.rho_g_func = lambda x, y: x + y
 
-    rho_l_default = False
-    rho_g_default = False
+        self.mu_l_func = lambda x, y: x + y
+        self.mu_g_func = lambda x, y: x + y
 
-    mu_l_default = False
-    mu_g_default = False
+        self.sigma_default = False
 
-    # TODO: check what the "prop"_type means and consider removing it
-    # FIXING this issue
-    # Properties decision functions
-    @staticmethod
-    def rho(T=None, P=None, foo=None, fluid=None):
-        # In case you want to use custom function saved on the class
-        # use the fluid var to specify if you the gas or liquid function.
-        p = Properties
-        #  Check the defined variables
-        T = p.T if T is None else T
-        P = p.P if P is None else P
-        fluid = "liq" if fluid is None else fluid
-        # Check which method to use
-        if callable(foo):
-            # Use the passed function
-            rho = foo(T, P)
-        elif fluid is "liq":
-            if p.rho_l_default:
-                # Use custom function
-                rho = p.rho_l_func(T, P)
-            else:
-                # Use coolprop library to get the fluid properties
-                rho = cp.PropsSI("D", "T", T + p.K, "P", P, p.liq)
-        elif fluid is "gas":
-            if p.rho_g_default:
-                # Use custom function
-                rho = p.rho_l_func(T, P)
-            else:
-                # Use coolprop library to get the fluid properties
-                rho = cp.PropsSI("D", "T", T + p.K, "P", P, p.gas)
-        else:
-            # Unknown fluid
-            # Use coolprop library to get the fluid properties
-            rho = cp.PropsSI("D", "T", T + p.K, "P", P, fluid)
-        return rho
+        self.rho_l_default = False
+        self.rho_g_default = False
 
-    @staticmethod
-    def mu(T=None, P=None, foo=None, fluid=None):
+        self.mu_l_default = False
+        self.mu_g_default = False
 
-        # In case you want to use custom function saved on the class
-        # use the fluid var to specify if you the gas or liquid function.
-        p = Properties
-        #  Check the defined variables
-        T = p.T if T is None else T
-        P = p.P if P is None else P
-        fluid = "liq" if fluid is None else fluid
-        # Check which method to use
-        if callable(foo):
-            # Use the passed function
-            mu = foo(T, P)
-        elif fluid is "liq":
-            if p.mu_l_default:
-                # Use custom function
-                mu = p.mu_l_func(T, P)
-            else:
-                # Use coolprop library to get the fluid properties
-                mu = cp.PropsSI("V", "T", T + p.K, "P", P, p.liq)
-        elif fluid is "gas":
-            if p.mu_g_default:
-                # Use custom function
-                mu = p.mu_l_func(T, P)
-            else:
-                # Use coolprop library to get the fluid properties
-                mu = cp.PropsSI("V", "T", T + p.K, "P", P, p.gas)
-        else:
-            # Unknown fluid
-            # Use coolprop library to get the fluid properties
-            mu = cp.PropsSI("V", "T", T + p.K, "P", P, fluid)
-        return mu
+        # Support variables
+        self.curr_hash = 0
 
-    @staticmethod
-    def sigma(T=None, x=None, foo=None, fluid=None):
-        # x = quality
-        # In case you want to use custom function saved on the class
-        # use the fluid var to specify if you the gas or liquid function.
-        p = Properties
-        #  Check the defined variables
-        T = p.T if T is None else T
-        x = 0.0 if x is None else x
-        fluid = p.liq if fluid is None else fluid
-        # Check which method to use
-        if callable(foo):
-            # Use the passed function
-            sigma = foo(T, x)
-        else:
-            if p.sigma_default:
-                # Use custom function
-                sigma = p.sigma_func(T, x)
-            else:
-                # Use coolprop library to get the fluid properties
-                sigma = cp.PropsSI("I", "Q", x, "T", T + p.K, fluid)
-        return sigma
+    def __len__(self):
+        # The length was arbitrarily based on v_sg
+        return len(self.v_sg)
+
+    # Update hash value
+    def __setattr__(self, key, value):
+        super(Properties, self).__setattr__(key, value)
+        if key != "curr_hash":
+            dct = vars(self)
+            del dct["curr_hash"]
+            self.curr_hash = hash(frozenset(dct.items()))
 
     pass
 
@@ -190,23 +121,126 @@ class Convert(object):
 
 
 class PropertyUtil(object):
-
-    p = Properties
-
-    def __init__(self, prop="rho", fluid="liq"):
+    def __init__(self, properties, prop="rho", phase="liq"):
+        # Quality
+        self.x = 0.0
+        # Properties class variables
+        self.p = properties
+        self.p_hash = 0
+        # Settings variables
         self.prop = prop
-        self.fluid = fluid
+        self.phase = phase
 
-    def __getitem__(self, index):
-        # Simpler variable names
-        T = self.p.T
-        P = self.p.P
+        # Cached value for the property
+        self.cached_value = None
+
+        # Value used when the user manually set the property value
+        self.manual = False
+
+    # TODO: check what the "prop"_type means and consider removing it
+    # FIXING this issue
+    # Properties decision functions
+    def rho(self, T=None, P=None, foo=None, fluid=None, phase=None):
         # Get fluid
-        fluid = self.p.liq if self.fluid is "liq" else self.p.gas
+        # In case you want to use custom function saved on the class
+        # use the fluid var to specify if you the gas or liquid function.
+        phase = phase if phase is not None else self.phase
+        if fluid is None:
+            fluid = self.p.liq if phase is "liq" else self.p.gas
+        # Check if a custom function was passed
+        custom_func = self.p.rho_l_default if phase is "liq" else self.p.rho_g_default
+        # Check which method to use
+        if callable(foo):
+            # Use the passed function
+            rho = foo(self.p)
+        elif custom_func:
+            # Use custom function
+            if phase is "liq":
+                rho = self.p.rho_l_func(self.p)
+            else:
+                rho = self.p.rho_g_func(self.p)
+        else:
+            #  Check the defined variables
+            T = self.T if T is None else T
+            P = self.P if P is None else P
+            K = self.p.K
+            # Use coolprop library to get the fluid properties
+            rho = cp.PropsSI("D", "T", T + K, "P", P, fluid)
+        return rho
+
+    def mu(self, T=None, P=None, foo=None, fluid=None, phase=None):
+        # Get fluid
+        # In case you want to use custom function saved on the class
+        # use the fluid var to specify if you the gas or liquid function
+        phase = phase if phase is not None else self.phase
+        if fluid is None:
+            fluid = self.p.liq if phase is "liq" else self.p.gas
+        # Check if a custom function was passed
+        custom_func = self.p.mu_l_default if phase is "liq" else self.p.mu_g_default
+        # Check which method to use
+        if callable(foo):
+            # Use the passed function
+            mu = foo(self.p)
+        elif custom_func:
+            # Use custom function
+            if phase is "liq":
+                mu = self.p.mu_l_func(self.p)
+            else:
+                mu = self.p.mu_g_func(self.p)
+        else:
+            #  Check the defined variables
+            T = self.T if T is None else T
+            P = self.P if P is None else P
+            K = self.p.K
+            # Use coolprop library to get the fluid properties
+            mu = cp.PropsSI("V", "T", T + K, "P", P, fluid)
+        return mu
+
+    def sigma(self, x, T=None, P=None, foo=None, fluid=None):
+        # Get fluid
+        # In case you want to use custom function saved on the class
+        # use the fluid var to specify if you the gas or liquid function.
+        if fluid is None:
+            fluid = self.p.liq if self.phase is "liq" else self.p.gas
+        # Check if a custom function was passed
+        custom_func = self.p.sigma_default
+        # Check which method to use
+        if callable(foo):
+            # Use the passed function
+            sigma = foo(x, self.p)
+        elif custom_func:
+            sigma = self.p.sigma_func(x, self.p)
+        else:
+            #  Check the defined variables
+            T = self.T if T is None else T
+            K = self.p.K
+            # Use coolprop library to get the fluid properties
+            sigma = cp.PropsSI("I", "Q", x, "T", T + K, fluid)
+        return sigma
+
+    def update_cache(self):
         # Get property
         if self.prop is "rho":
-            return self.p.rho(T=T[index], P=P[index], foo=None, fluid=fluid)
+            self.cached_value = self.rho()
         elif self.prop is "mu":
-            return self.p.mu(T=T[index], P=P[index], foo=None, fluid=fluid)
+            self.cached_value = self.mu()
         elif self.prop is "sigma":
-            return self.p.sigma(T=T[index], x=0.0, foo=None, fluid=fluid)
+            self.cached_value = self.p.sigma(self.x)
+
+    @property
+    def value(self):
+        if not self.manual:
+            if (self.p.curr_hash != self.p_hash) or (self.p_rho_l.value is not None):
+                self.p_hash = self.p.curr_hash
+                self.update_cache()
+        return self.cached_value
+
+    @value.setter
+    def value(self, value):
+        # if set to None it will disable the manual property settings
+        if value is None:
+            self.manual = False
+        else:
+            # Enable the manual value
+            self.manual = True
+            self.cached_value = value

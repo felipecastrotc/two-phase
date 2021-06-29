@@ -1,12 +1,14 @@
 import numpy as np
 
-from .flow_utils import Properties as p
+from .flow_utils import Properties
 from .models import EBVelocity, Homogeneous, Pattern
 from .utils import get_kwargs
 
 
 class EBVelUtil(object):
-    def __init__(self):
+    def __init__(self, p):
+        # Properties
+        self.p = p
         # Models
         self.functions = {
             "nicklin1962": self.nicklin1962,
@@ -34,8 +36,9 @@ class EBVelUtil(object):
         else:
             return np.array([eb[key]() for key in eb.keys()])
 
-    @staticmethod
-    def nicklin1962(v_sg=None, v_sl=None, d=None):
+    def nicklin1962(self, v_sg=None, v_sl=None, d=None):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sl = p.v_sl if not v_sl else v_sl
         v_sg = p.v_sg if not v_sg else v_sg
@@ -43,8 +46,9 @@ class EBVelUtil(object):
         # Calculate and return the value
         return EBVelocity.nicklin1962(v_sg, v_sl, d, p.g)
 
-    @staticmethod
-    def bendiksen1984(v_sg=None, v_sl=None, d=None, theta=None):
+    def bendiksen1984(self, v_sg=None, v_sl=None, d=None, theta=None):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if not v_sg else v_sg
         v_sl = p.v_sl if not v_sl else v_sl
@@ -53,8 +57,9 @@ class EBVelUtil(object):
         # Calculate and return the value
         return EBVelocity.bendiksen1984(v_sg, v_sl, d, theta, p.g)
 
-    @staticmethod
-    def theron1989(v_sg=None, v_sl=None, d=None, theta=None):
+    def theron1989(self, v_sg=None, v_sl=None, d=None, theta=None):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if not v_sg else v_sg
         v_sl = p.v_sl if not v_sl else v_sl
@@ -63,8 +68,8 @@ class EBVelUtil(object):
         # Calculate and return the value
         return EBVelocity.theron1989(v_sg, v_sl, d, theta, p.g)
 
-    @staticmethod
     def petalasaziz2000(
+        self,
         v_sg=None,
         v_sl=None,
         rho_l=None,
@@ -74,6 +79,8 @@ class EBVelUtil(object):
         foo=None,
         fluid=None,
     ):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if not v_sg else v_sg
         v_sl = p.v_sl if not v_sl else v_sl
@@ -87,8 +94,9 @@ class EBVelUtil(object):
         # Calculate and return the value
         return EBVelocity.petalasaziz2000(v_sg, v_sl, rho_l, mu_l, d, theta, p.g)
 
-    @staticmethod
-    def dukler1985(v_sg=None, v_sl=None):
+    def dukler1985(self, v_sg=None, v_sl=None):
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if not v_sg else v_sg
         v_sl = p.v_sl if not v_sl else v_sl

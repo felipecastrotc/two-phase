@@ -97,7 +97,10 @@ class Homogeneous(object):
     # ====================== Homogeneous model ==========================
     @staticmethod
     def gvf(v_sg, v_sl):
-        return v_sg / (v_sg + v_sl)
+        if v_sg + v_sl > 0:
+            return v_sg / (v_sg + v_sl)
+        else:
+            return None
 
     @staticmethod
     def Rem(rho_g, rho_l, mu_g, mu_l, d, v_sg=None, v_sl=None, v_m=None, gvf=None):
