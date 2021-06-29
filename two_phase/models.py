@@ -163,7 +163,7 @@ class Pattern(object):
     }
 
     @staticmethod
-    def taitel1980(v_sg, v_sl, rho_g, rho_l, mu_l, sigma, g, l, d, text=False):
+    def taitel1980(v_sg, v_sl, rho_g, rho_l, mu_g, mu_l, sigma, g, l, d, text=False):
         # TODO: documentation and references
 
         if v_sg == 0:
@@ -175,8 +175,11 @@ class Pattern(object):
 
             # Dispersed Bubble
             # when f >= 0 or v_sl_g > v_sl -> Dispersed bubble
-            # Euqation 4.23 of Shoham 2006
+            # Equation 4.23 of Shoham 2006
             v_m = v_sl + v_sg
+            gvfh = Homogeneous.gvf(v_sg, v_sl)
+            rho_m = Homogeneous.rho_m(gvfh, rho_g, rho_l)
+            mu_m = Homogeneous.mu_m(gvfh, mu_g, mu_l)
             # Left hand side part 1
             f_l1 = (
                 2
@@ -184,14 +187,14 @@ class Pattern(object):
                 * ((rho_l / sigma) ** 0.6)
             )
             # Left hand side part 2
-            f_l2 = ((((2 * 0.046) / d) * ((rho_l * d / mu_l) ** -0.2)) ** 0.4) * (
-                v_m ** 1.12
-            )
+            f_l2 = ((((2 * 0.046) / d) * ((rho_m * d / mu_m) ** -0.2)) ** 0.4)
+            # Left hand side part 3
+            f_l3 = (v_m ** 1.12)
             # Right hand side
             f_r = 0.725 + 4.15 * ((v_sg / v_m) ** 0.5)
             # Full equation
-            f = f_l1 * f_l2 - f_r
-
+            f = f_l1 * f_l2 * f_l3 - f_r
+            
             # Equation 4.24 of Shoham 2006
             v_sl_g = v_sg / 0.52 - v_sg
 
