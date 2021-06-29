@@ -1,6 +1,5 @@
 import numpy as np
 
-from .flow_utils import Properties
 from .models import EBVelocity, Homogeneous, Pattern
 from .utils import get_kwargs
 
@@ -106,11 +105,14 @@ class EBVelUtil(object):
 
 
 class HomogeneousUtil(object):
-    def __init__(self):
+    def __init__(self, p):
+        # Properties
+        self.p = p
         pass
 
     # ===================== Homogeneous model utility ========================
     def Rem(
+        self,
         v_sg=None,
         v_sl=None,
         rho_l=None,
@@ -125,7 +127,8 @@ class HomogeneousUtil(object):
         gvf=None,
         foo=None,
     ):
-
+        # Simpler name
+        p = self.p
         # Check for default variables
         v_sg = p.v_sg if v_sg is None else v_sg
         v_sl = p.v_sl if v_sl is None else v_sl
@@ -143,11 +146,14 @@ class HomogeneousUtil(object):
 
 
 class PatternUtil(object):
-    def __init__(self):
+    def __init__(self, p):
+        # Properties
+        self.p = p
         pass
 
     @staticmethod
     def taitel1980(
+        self,
         d=None,
         l=None,
         v_sg=None,
@@ -162,6 +168,8 @@ class PatternUtil(object):
         foo=None,
         text=False,
     ):
+        # Simpler name
+        p = self.p
         # Return the list of flow patterns
 
         # Check for default variables

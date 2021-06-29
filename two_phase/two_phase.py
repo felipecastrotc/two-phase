@@ -29,12 +29,12 @@ class TwoPhase(object):
         
         # Classes
         # Utils for the Elongated bubble velocity
-        self.eb_vel = EBVelUtil()
+        self.eb_vel = EBVelUtil(p=self.prop)
         # Utils for the Homogeneous model
-        self.hg = HomogeneousUtil
+        self.hg = HomogeneousUtil(p=self.prop)
 
         # Utils for flow pattern
-        self.ptt = PatternUtil
+        self.ptt = PatternUtil(p=self.prop)
         # Convert utils
         self.convert = Convert
 
