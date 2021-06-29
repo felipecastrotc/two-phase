@@ -69,8 +69,8 @@ class Properties(object):
         super(Properties, self).__setattr__(key, value)
         if key != "curr_hash":
             dct = vars(self)
-            del dct["curr_hash"]
-            self.curr_hash = hash(frozenset(dct.items()))
+            f_dct = filter(lambda x: x[0] != "curr_hash", dct.items())
+            self.curr_hash = hash(frozenset(f_dct))
 
     pass
 
