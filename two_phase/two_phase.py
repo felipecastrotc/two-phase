@@ -9,7 +9,6 @@ from .models_utils import *
 
 
 class TwoPhase(object):
-
     def __init__(self, d=None, theta=None, l=None, gas="air", liquid="water"):
         # Properties
         self.prop = Properties()
@@ -26,7 +25,7 @@ class TwoPhase(object):
         self.prop.mu_l = PropertyUtil(self.prop, prop="mu", phase="liq")
         self.prop.mu_g = PropertyUtil(self.prop, prop="mu", phase="gas")
         self.prop.sigma = PropertyUtil(self.prop, prop="sigma", phase="liq")
-        
+
         # Classes
         # Utils for the Elongated bubble velocity
         self.eb_vel = EBVelUtil(p=self.prop)
@@ -161,7 +160,7 @@ class TwoPhase(object):
     @property
     def rho_l(self):
         return self.prop.rho_l.value
-    
+
     @rho_l.setter
     def rho_l(self, value):
         self.prop.rho_l.value = value
@@ -169,7 +168,7 @@ class TwoPhase(object):
     @property
     def rho_g(self):
         return self.prop.rho_g.value
-    
+
     @rho_g.setter
     def rho_g(self, value):
         self.prop.rho_g.value = value
@@ -177,7 +176,7 @@ class TwoPhase(object):
     @property
     def mu_l(self):
         return self.prop.mu_l.value
-    
+
     @mu_l.setter
     def mu_l(self, value):
         self.prop.mu_l.value = value
@@ -185,7 +184,7 @@ class TwoPhase(object):
     @property
     def mu_g(self):
         return self.prop.mu_g.value
-    
+
     @mu_g.setter
     def mu_g(self, value):
         self.prop.mu_g.value = value
@@ -193,7 +192,7 @@ class TwoPhase(object):
     @property
     def sigma(self):
         return self.prop.sigma.value
-    
+
     @sigma.setter
     def sigma(self, value):
         self.prop.sigma.value = value
