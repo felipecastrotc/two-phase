@@ -1,6 +1,7 @@
 import numpy as np
 
-from .models import EBVelocity, Homogeneous, Pattern
+from .models import EBVelocity, Homogeneous
+from .models_flow_pattern_utils import Taitel1980Util
 from .utils import get_kwargs
 
 
@@ -131,58 +132,9 @@ class HomogeneousUtil(object):
 
 
 class PatternUtil(object):
+    
     def __init__(self, p):
-        # Properties
-        self.p = p
+        self.taitel1980 = Taitel1980Util(p=p)
         pass
-
-    def taitel1980(
-        self,
-        d=None,
-        l=None,
-        v_sg=None,
-        v_sl=None,
-        rho_g=None,
-        rho_l=None,
-        mu_l=None,
-        sigma=None,
-        text=False,
-    ):
-        # Simpler name
-        p = self.p
-        # Return the list of flow patterns
-
-        # Check for default variables
-        d = p.d if d is None else d
-        l = p.l if l is None else l
-        v_sg = p.v_sg if v_sg is None else v_sg
-        v_sl = p.v_sl if v_sl is None else v_sl
-
-        # TODO: Consider changing fluid var from gas or liq to the value of coolprop
-        # fluid
-        # Set properties
-        rho_g = p.rho_g.value if rho_g is None else rho_g
-        rho_l = p.rho_l.value if rho_l is None else rho_l
-        mu_l = p.mu_l.value if mu_l is None else mu_l
-        sigma = p.sigma.value if sigma is None else sigma
-
-        # Create a dictionary to pass to the function
-        kwargs = {
-            "d": d,
-            "l": l,
-            "v_sg": v_sg,
-            "v_sl": v_sl,
-            "rho_g": rho_g,
-            "rho_l": rho_l,
-            "mu_l": mu_l,
-            "sigma": sigma,
-            "g": p.g,
-            "text": text,
-        }
-
-        ptt = []
-        for kwarg in get_kwargs(kwargs):
-            ptt += [Pattern.taitel1980(**kwarg)]
-        return np.array(ptt)
 
     pass
